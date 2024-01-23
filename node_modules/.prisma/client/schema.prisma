@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/dynamic_eng?schema=public"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  role     Role   @default(USER)
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[] // One-to-many relationship with Product model
+  catInfo  String?   @db.Text
+}
+
+model Product {
+  id               Int       @id @default(autoincrement())
+  name             String
+  price            Float
+  minOrderQuantity Int
+  brand            String?
+  images           Json?
+  description      String?   @db.Text
+  mountingType     String?
+  material         String?
+  automationGrade  String?
+  serviceMode      String?
+  paymentMode      String?
+  timeDuration     String?
+  location         String?
+  Category         Category? @relation(fields: [categoryId], references: [id])
+  categoryId       Int?
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Inquiry {
+  id      Int     @id @default(autoincrement())
+  email   String
+  phone   String
+  message String
+  active  Boolean @default(true)
+}
+
+model Project {
+  id                Int              @id @default(autoincrement())
+  projectName       String
+  description       String
+  projectImage      Json
+  projectCategory   projectCategory? @relation(fields: [projectCategoryId], references: [id])
+  projectCategoryId Int?
+}
+
+model projectCategory {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  projects Project[] // One-to-many relationship with Product model
+  catInfo  String?   @db.Text
+}
